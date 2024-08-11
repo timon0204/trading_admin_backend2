@@ -157,6 +157,7 @@ module.exports = (sequelize, Sequelize) => {
             zip: 0,
             addressLine1: "",
         })
+        
 
     };
 

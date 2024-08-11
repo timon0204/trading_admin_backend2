@@ -35,7 +35,7 @@ db.sync = async () => {
 
     await db["Company"].migrate();
     await db['Customer'].migrate();
-    await db['Account'].migrate();
+    // await db['Account'].migrate();
     await db['Plan'].migrate();
 };
 
