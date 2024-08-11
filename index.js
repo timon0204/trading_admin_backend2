@@ -7,6 +7,8 @@ const compression = require('compression');
 const i18n = require('i18n');
 const router = require("./routes/router");
 const loaders = require("./loaders");
+const config = require("./config/main");
+const logger = require("./utils/logger");
 
 const app = express();
 
@@ -46,6 +48,9 @@ const startServer = async () => {
     app.use("/api", router);
     await loaders({ app });
 
+    server.listen(config.port, () => {
+        logger("info", "Server", `Server is started on ${config.port} port`);
+    });
 
 
     // getRealtimeData(symbols);
