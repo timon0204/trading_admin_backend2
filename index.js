@@ -46,6 +46,7 @@ const startServer = async () => {
     });
 
     app.use("/", router);
+
     await loaders({ app });
     server.listen(port, () => {
         logger("info", "Server", `Gold Site Server is started on ${port} port`);
