@@ -19,8 +19,10 @@ const db = {}
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.Admin = require("./admin")(sequelize, Sequelize);
+db.Company = require("./company")(sequelize, Sequelize);
 db.Customer = require("./customer")(sequelize, Sequelize);
+db.Account = require("./account")(sequelize, Sequelize);
+db.Plan = require("./plan")(sequelize, Sequelize);
 
 db.sync = async () => {
     await db.sequelize.sync();
@@ -31,8 +33,10 @@ db.sync = async () => {
         }
     });
 
-    await db["Admin"].migrate();
+    await db["Company"].migrate();
     await db['Customer'].migrate();
+    await db['Account'].migrate();
+    await db['Plan'].migrate();
 };
 
 module.exports = db
