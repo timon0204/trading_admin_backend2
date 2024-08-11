@@ -14,7 +14,7 @@ router.post("/createCustomer", adminmiddleware, customerController.createCustome
 router.post("/updateCustomer", adminmiddleware, customerController.updateCustomer);
 router.post("/deleteCustomer", adminmiddleware, customerController.deleteCustomer);
 
-router.post("/getAccounts", adminmiddleware, accountController.getAccounts);
+router.get("/getAccounts", adminmiddleware, accountController.getAccounts);
 router.post("/createAccount", adminmiddleware, accountController.createAccout);
 
 module.exports = router;

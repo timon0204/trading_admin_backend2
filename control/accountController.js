@@ -81,13 +81,15 @@ exports.createAccout = async (req, res) => {
 }
 
 exports.getAccounts = async (req, res) => {
+    console.log("this is the getaccounts")
     const token = req.headers.authorization || "";
     const company = await Company.findOne({ where: { token } });
+    console.log("this is the company", company.email);
     if (company.role == "admin") {
         const accounts = await Account.findAll();
-        return accounts;
+        return res.status(200).send({accounts: accounts});
     } else {
         const accounts = await Account.findAll({ where: { companyEmail: company.email } });
-        return accounts;
+        return res.status(200).send({accounts: accounts});
     }
 }
