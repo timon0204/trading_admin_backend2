@@ -1,4 +1,4 @@
-const { Company } = require("../models");
+const { Admin } = require("../models");
 
 exports.adminmiddleware = async (req, res, next) => {
     const token = req.headers.authorization || "";
@@ -6,8 +6,8 @@ exports.adminmiddleware = async (req, res, next) => {
         res.status(401).json({ state: "No Vailed Token! Please Login Again!" });
         return
     }
-    const company = await Company.findOne({ where: { token } });
-    if (!company) {
+    const admin = await Admin.findOne({ where: { token } });
+    if (!admin) {
         res.status(401).json({ state: "No Vailed Token! Please Login Again!" });
         return
     }

@@ -6,6 +6,7 @@ const secretKey = 'tradeSecretKey';
 
 exports.login = async (req, res) => {
     const { email, password } = req.body;
+    console.log("this is the req.body",req.body)
     try {
         const company = await Company.findOne({ where: { email: email } });
         if (company) {
