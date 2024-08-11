@@ -14,5 +14,5 @@ module.exports = {
         logging: process.env.DB_LOGGING === "true",
     },
 
-    siteEndpoint: process.env.WW_SiteEndpoint,
+    tradeAPI: process.env.TRADE_API,
 }

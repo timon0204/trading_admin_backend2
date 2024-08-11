@@ -5,18 +5,13 @@ const jwt = require('jsonwebtoken');
 const {secretKey} = require("../config/key")
 
 module.exports = (sequelize, Sequelize) => {
-    const Admin = sequelize.define(
-        "Admin",
+    const Company = sequelize.define(
+        "Company",
         {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
                 autoIncrement: true
-            },
-            removed: {
-                type: Sequelize.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
             },
             name: {
                 type: Sequelize.STRING,
@@ -26,16 +21,7 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
-            enabled: {
-                type: Sequelize.BOOLEAN,
-                allowNull: false,
-                defaultValue: true,
-            },
             password: {
-                type: Sequelize.STRING,
-                allowNull: false,
-            },
-            surname: {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
@@ -44,32 +30,49 @@ module.exports = (sequelize, Sequelize) => {
                 allowNull: false,
             },
             role: {
-                type: Sequelize.STRING,
+                type: Sequelize.ENUM("admin", "company"),
                 allowNull: false,
-                defaultValue: 'owner'
+                defaultValue: "company"
             },
+            allow: {
+                type: Sequelize.BOOLEAN,
+                allowNull: false,
+                defaultValue: true
+            },
+            blockReason: {
+                type: Sequelize.STRING,
+                allowNull: true
+            }
         },
         {
-            tableName: "admins",
+            tableName: "company",
             freezeTableName: true,
             timestamps: true,
         }
     );
 
-    Admin.migrate = async () => {
-            await Admin.destroy({ truncate: true });
+    Company.migrate = async () => {
+            await Company.destroy({ truncate: true });
             const saltRounds = 10;
             const hashedPassword = await bcrypt.hash("123456", saltRounds);
 
-            await Admin.create({
-                email: "admin@demo.com",
-                surname: "Admin",
-                name: 'IDURAR',
+            await Company.create({
+                email: "admin@gmail.com",
+                name: "Admin",
                 password: hashedPassword,
-                token:  jwt.sign({hashedPassword, type:"Demo"}, secretKey)
+                token:  jwt.sign({hashedPassword, type:"Demo"}, secretKey),
+                role: "admin",
+                allow: true,
             })
-
+            await Company.create({
+                email: "testCompany@gmail.com",
+                name: "TestCompany",
+                password: hashedPassword,
+                token:  jwt.sign({hashedPassword, type:"Demo"}, secretKey),
+                role: "company",
+                allow: true,
+            })
     };
 
-    return Admin;
+    return Company;
 }
