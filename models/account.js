@@ -106,6 +106,7 @@ module.exports = (sequelize, Sequelize) => {
             allow: true,
             blockReason: '13123123',
             breached:false,
+            dayStartEquity:12312,
             breachedReason: 'None',
             tradeSystem: 'MT4'
         })
