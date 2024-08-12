@@ -68,12 +68,16 @@ module.exports = (sequelize, Sequelize) => {
                 allowNull: false
             },
             breachedReason: {
-                type: Sequelize.ENUM("DailyDrawdown", "TotalDrawddown", "TotalGoal", "None"),
+                type: Sequelize.ENUM("DailyDrawdown", "TotalDrawdown", "TotalGoal", "None"),
                 allowNull: false,
                 defaultValue: "None"
             },
             tradeSystem: {
                 type: Sequelize.ENUM("MT4", "LaserTrade"),
+                allowNull: false,
+            },
+            dayStartEquity: {
+                type: Sequelize.DOUBLE(20, 2),
                 allowNull: false,
             }
         },

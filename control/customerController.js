@@ -24,7 +24,7 @@ exports.getCustomers = async (req, res) => {
         const decodedToken = jwt.verify(token, secretKey);
         const originCompany = await Company.findOne({ where: { id: decodedToken.id } });
         let customers;
-        if (originCompany.role == 'admin') {
+        if (originCompany.role == 'Admin') {
             customers = await Customer.findAll();
         } else {
             customers = await Customer.findAll({ where: { companyEmail: originCompany.email } });

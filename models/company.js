@@ -30,9 +30,9 @@ module.exports = (sequelize, Sequelize) => {
                 allowNull: false,
             },
             role: {
-                type: Sequelize.ENUM("admin", "company"),
+                type: Sequelize.ENUM("Admin", "Company"),
                 allowNull: false,
-                defaultValue: "company"
+                defaultValue: "Company"
             },
             allow: {
                 type: Sequelize.BOOLEAN,
@@ -61,15 +61,7 @@ module.exports = (sequelize, Sequelize) => {
                 name: "Admin",
                 password: hashedPassword,
                 token:  jwt.sign({hashedPassword, type:"Demo"}, secretKey),
-                role: "admin",
-                allow: true,
-            })
-            await Company.create({
-                email: "testCompany@gmail.com",
-                name: "TestCompany",
-                password: hashedPassword,
-                token:  jwt.sign({hashedPassword, type:"Demo"}, secretKey),
-                role: "company",
+                role: "Admin",
                 allow: true,
             })
     };

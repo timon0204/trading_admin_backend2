@@ -43,6 +43,7 @@ exports.createAccout = async (req, res) => {
             companyEmail: customer.companyEmail,
             type: "Phase1",
             password: customer.password,
+            leverage: plan.leverage,
         });
 
         const account = await Account.create({
@@ -53,16 +54,17 @@ exports.createAccout = async (req, res) => {
             currentEquity: plan.initialBalance,
             leverage: plan.leverage,
             type: "Phase1",
-            dailyDrawdown: plan.dailyDrawdown,
-            totalDrawdown: plan.totalDrawdown,
-            totalTarget: plan.phase1,
+            dailyDrawdown: (plan.initialBalance * plan.dailyDrawdown / 100),
+            totalDrawdown: (plan.initialBalance * (100 - plan.totalDrawdown) / 100),
+            totalTarget: (plan.initialBalance * (100 + plan.phase1) / 100),
             profitShare: plan.profitShare,
             allow: true,
             breached: false,
             tradeSystem,
+            dayStartEquity: plan.initialBalance,
         });
 
-        const accounts = company.role === "admin"
+        const accounts = company.role === "Admin"
             ? await Account.findAll()
             : await Account.findAll({ where: { companyEmail: company.email } });
 
@@ -81,13 +83,56 @@ exports.createAccout = async (req, res) => {
 }
 
 exports.getAccounts = async (req, res) => {
-    const token = req.headers.authorization || "";
-    const company = await Company.findOne({ where: { token } });
-    if (company.role == "admin") {
-        const accounts = await Account.findAll();
-        return accounts;
-    } else {
-        const accounts = await Account.findAll({ where: { companyEmail: company.email } });
-        return accounts;
+    try {
+        const token = req.headers.authorization || "";
+        const company = await Company.findOne({ where: { token } });
+        if (company.role == "Admin") {
+            const accounts = await Account.findAll();
+            return res.status(200).json({ accounts });
+        } else {
+            const accounts = await Account.findAll({ where: { companyEmail: company.email } });
+            return res.status(200).json({ accounts });
+        }
+    } catch (error) {
+        logger("error", "AccountController", `Get Accounts | ${error.message}`)
+        res.status(500).json({ message: `Get Accounts Failed | ${error.message}` })
+    }
+}
+
+exports.resetDailyDrawdown = async (req, res) => {
+    try {
+        const { displayName } = req.body;
+        const account = await Account.findOne({ where: { displayName: displayName } });
+        await Account.update({ breachedReason: "none", breached: false, dayStartEquity: account.balance });
+        res.status(200).json({ message: "Reset DailyDrawdown Successfully" });
+    } catch (error) {
+        logger("error", "AccountController", `Reset DailyDrawdown | ${error.message}`);
+        res.status(500).json({ message: `Reset DailyDrawdown Failed | ${error.message}` })
+    }
+}
+
+exports.upgradeAccount = async (req, res) => {
+    try {
+        const { displayName } = req.body;
+        const account = await Account.findOne({ where: { displayName: displayName } });
+        if (account.breachedReason == "TotalGoal") {
+            const plan = await Plan.findOne({ where: { name: account.plan } });
+            if (account.type == "Phase1") {
+                await Account.update({
+                    currentEquity: plan.initialBalance,
+                    leverage: plan.leverage,
+                    type: "Phase2",
+                    dailyDrawdown: (plan.initialBalance * plan.dailyDrawdown / 100),
+                    totalDrawdown: (plan.initialBalance * (100 - plan.totalDrawdown) / 100),
+                    totalTarget: (plan.initialBalance * (100 + plan.phase2) / 100),
+                    profitShare: plan.profitShare,
+                    allow: true,
+                    breached: false,
+                    dayStartEquity: plan.initialBalance,
+                })
+            }
+        }
+    } catch (error) {
+        logger("error", "AccountController", `Upgrade Account | ${error.message}`);
     }
 }
