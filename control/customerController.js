@@ -6,11 +6,21 @@ const { secretKey } = require("../config/key")
 
 exports.createCustomer = async (req, res) => {
     try {
-        const { email, companyEmail, password, active, firstName, middleName, lastName, nickName, birthday, accounts, orders, referrals, language, phone, exteranlID1, exteranlID2, agreementID, agreementIP, agreementLegalName, agreementTs, country, state, city, zip, addressLine1, addressLine2, addressLine3 } = req.body;
+        const { email, active, firstName, middleName, lastName, nickName, birthday, accounts, orders, referrals, language, phone, exteranlID1, exteranlID2, agreementID, agreementIP, agreementLegalName, agreementTs, country, state, city, zip, addressLine1, addressLine2, addressLine3, status } = req.body;
+        const token = req.headers.authorization;
+        const decodedToken = jwt.verify(token, secretKey);
+        const originCompany = await Company.findOne({ where: { id: decodedToken.id } });
+        const companyEmail = originCompany.email;
+        let password;
+        if(req.body.password) {
+            password = req.body.password;
+        } else {
+            password = '123456';
+        }
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         const createdAt = Date.now();
-        const customer = await Customer.create({ email: email, companyEmail: companyEmail, password: hashedPassword, active: active, firstName: firstName, middleName: middleName, lastName: lastName, nickName: nickName, birthday: birthday, accounts: accounts, orders: orders, referrals: referrals, language: language, phone: phone, exteranlID1: exteranlID1, exteranlID2: exteranlID2, agreementID: agreementID, agreementIP: agreementIP, agreementLegalName: agreementLegalName, agreementTs: agreementTs, country: country, state: state, city: city, zip: zip, addressLine1: addressLine1, addressLine2: addressLine2, addressLine3: addressLine3, createdAt: createdAt });
+        const customer = await Customer.create({ email: email, companyEmail: companyEmail, password: hashedPassword, active: active, firstName: firstName, middleName: middleName, lastName: lastName, nickName: nickName, birthday: birthday, accounts: accounts, orders: orders, referrals: referrals, language: language, phone: phone, exteranlID1: exteranlID1, exteranlID2: exteranlID2, agreementID: agreementID, agreementIP: agreementIP, agreementLegalName: agreementLegalName, agreementTs: agreementTs, country: country, state: state, city: city, zip: zip, addressLine1: addressLine1, status: status, addressLine2: addressLine2, addressLine3: addressLine3, createdAt: createdAt });
         customer.save();
         return res.status(200).send({ message: "created successfully", });
     } catch (err) {

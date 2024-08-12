@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt');
 const { where } = require('sequelize');
 const axios = require('axios');
 const { tradeAPI } = require("../config/main");
-
 const { Account, Company, Plan, Customer } = require("../models");
 const logger = require('../utils/logger');
 
