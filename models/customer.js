@@ -152,7 +152,7 @@ module.exports = (sequelize, Sequelize) => {
             phone: "+380 123456789",
             status: "allow",
             country: "Ukraine",
-            state: "",
+            state: "Pending Kyc",
             city: "",
             zip: 0,
             addressLine1: "",
