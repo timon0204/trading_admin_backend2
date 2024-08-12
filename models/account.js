@@ -25,8 +25,15 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.STRING,
                 allowNull: false
             },
-
+            balance: {
+                type: Sequelize.DOUBLE(20, 2),
+                allowNull: false
+            },
             currentEquity: {
+                type: Sequelize.DOUBLE(20, 2),
+                allowNull: false
+            },
+            currentDrawdown: {
                 type: Sequelize.DOUBLE(20, 2),
                 allowNull: false
             },
@@ -96,7 +103,9 @@ module.exports = (sequelize, Sequelize) => {
             customerEmail: 'custormer@gmail.com',
             companyEmail: 'testCompany@gmail.com',
             plan: 'PPPP',
+            balance: "10000",
             currentEquity: '112312',
+            currentDrawdown: 0,
             leverage: '1231',
             type: 'Phase1',
             dailyDrawdown: 12312,

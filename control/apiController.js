@@ -9,8 +9,8 @@ const logger = require('../utils/logger');
 exports.updateAccount = async (req, res) => {
     try {
         const { displayName, balance } = req.body;
-        await Account.update({ currentEquity: balance }, { where: { displayName } });
         const account = await Account.findOne({ where: { displayName } });
+        await Account.update({ balance: balance }, { where: { displayName } });
 
         ///////////////////////**************Start Check Account With Plan****************///////////////////////////////
         if (balance < account.totalDrawdown) {
@@ -34,4 +34,41 @@ exports.updateAccount = async (req, res) => {
             message: `Update Account Failed : ${error.message}`
         });
     }
+}
+
+exports.getMT4Account = async (req, res) => {
+    try {
+        const { mail, accountNumber, accountBalance, accountEquity, drawdown, chartStartDate } = req.body;
+
+        if (!mail || !accountNumber || !accountBalance || !accountEquity || !drawdown || !chartStartDate) {
+            return res.status(400).send('Missing required fields');
+        }
+        const customer = await Customer.find({where : {email : mail}});
+        const account = await Account.find({where : {displayName : accountNumber, customerEmail: mail}});
+        if(account && customer) {
+            await Account.update({
+                balance: accountBalance,
+                currentEquity: accountEquity,
+                currentDrawdown: drawdown
+            }, {where: {displayName: accountNumber}});
+        } else {
+            res.status(500).send('Invalid account');
+        }
+
+        ///////////////////////**************Start Check Account With Plan****************///////////////////////////////
+        if (balance < account.totalDrawdown) {
+            await Account.update({ breached: true, breachedReason: "TotalDrawdown" }, { where: { displayName } });
+        }
+        if (balance > account.totalTarget) {
+            await Account.update({ breached: true, breachedReason: "TotalGoal" }, { where: { displayName } });
+        }
+        if (account.dayStartEquity - balance > account.dailyDrawdown) {
+            await Account.update({ breached: true, breachedReason: "DailyDrawdown" }, { where: { displayName } });
+        }
+        ///////////////////////***************End Check Account With Plan*****************///////////////////////////////
+
+    } catch (error) {
+        return res.status(500).send(`GetMt4Account Failed with Error | ${error.message}`);
+    }
+
 }

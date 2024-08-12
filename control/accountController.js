@@ -33,18 +33,20 @@ exports.createAccount = async (req, res) => {
                 message: "Plan not found."
             });
         }
+        const displayName = tradeSystem == "LaserTrade" ? (new Date()).getTime() : req.body.displayName;
+        if (tradeSystem == "LaserTrade") {
 
-        const displayName = (new Date()).getTime();
+            await axios.post(`${tradeAPI}/createUser`, {
+                name: customer.nickName,
+                email: displayName,
+                balance: plan.initialBalance,
+                companyEmail: customer.companyEmail,
+                type: "Phase1",
+                password: customer.password,
+                leverage: plan.leverage,
+            });
 
-        await axios.post(`${tradeAPI}/createUser`, {
-            name: customer.nickName,
-            email: displayName,
-            balance: plan.initialBalance,
-            companyEmail: customer.companyEmail,
-            type: "Phase1",
-            password: customer.password,
-            leverage: plan.leverage,
-        });
+        }
 
         const account = await Account.create({
             displayName: displayName,
