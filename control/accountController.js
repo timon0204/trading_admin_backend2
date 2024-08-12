@@ -6,7 +6,7 @@ const { tradeAPI } = require("../config/main");
 const { Account, Company, Plan, Customer } = require("../models");
 const logger = require('../utils/logger');
 
-exports.createAccout = async (req, res) => {
+exports.createAccount = async (req, res) => {
     try {
         const token = req.headers.authorization || "";
         const company = await Company.findOne({ where: { token } });
@@ -16,7 +16,7 @@ exports.createAccout = async (req, res) => {
                 message: "Invalid authorization token."
             });
         }
-
+        console.log("this is the req", req.body)
         const { customerEmail, companyEmail, planName, tradeSystem } = req.body;
         const customer = await Customer.findOne({ where: { email: customerEmail } });
         if (!customer) {
@@ -81,7 +81,6 @@ exports.createAccout = async (req, res) => {
 }
 
 exports.getAccounts = async (req, res) => {
-    console.log("this is the getaccounts")
     const token = req.headers.authorization || "";
     const company = await Company.findOne({ where: { token } });
     console.log("this is the company", company.email);
@@ -91,5 +90,19 @@ exports.getAccounts = async (req, res) => {
     } else {
         const accounts = await Account.findAll({ where: { companyEmail: company.email } });
         return res.status(200).send({accounts: accounts});
+    }
+}
+
+exports.deleteAccount = async (req, res) => {
+    const { accountId } = req.body;
+    try {
+        const account = await Account.findOne({ where: { id: accountId } });
+        if (!account) {
+            return res.status(404).send({ message: 'Cannot find the Account' });
+        }
+        await Account.destroy({ where: { id: accountId } });
+        return res.status(200).send({ message: "Successfully deleted" });
+    } catch (error) {
+        return res.status(500).send({ message: 'An error occurred while deleting the customer.' });
     }
 }

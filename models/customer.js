@@ -112,6 +112,10 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.STRING,
                 allowNull: false,
             },
+            status: {
+                type: Sequelize.ENUM("pending", "allow", "block"),
+                allowNull: false,
+            },
             addressLine1: {
                 type: Sequelize.STRING,
                 allowNull: false,
@@ -152,9 +156,10 @@ module.exports = (sequelize, Sequelize) => {
             phone: "+380 123456789",
             status: "allow",
             country: "Ukraine",
-            state: "Pending Kyc",
+            state: "KR",
             city: "",
             zip: 0,
+            status: 'allow',
             addressLine1: "",
         })
         

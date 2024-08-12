@@ -36,6 +36,7 @@ exports.getCustomers = async (req, res) => {
 }
 
 exports.updateCustomer = async (req, res) => {
+    console.log("this is the req", req.body)
     try {
         const { email, password, active, firstName, middleName, lastName, nickName, birthday, accounts, orders, referrals, language, phone, exteranlID1, exteranlID2, agreementID, agreementIP, agreementLegalName, agreementTs, country, state, city, zip, addressLine1, addressLine2, addressLine3, customerId } = req.body;
         const saltRounds = 10;
