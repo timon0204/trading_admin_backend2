@@ -11,5 +11,6 @@ exports.adminmiddleware = async (req, res, next) => {
         res.status(401).json({ state: "No Vailed Token! Please Login Again!" });
         return
     }
+    req.role = company.role;
     next();
 }

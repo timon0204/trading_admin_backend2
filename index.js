@@ -5,10 +5,12 @@ const path = require('path');
 const http = require('http');
 const compression = require('compression');
 const i18n = require('i18n');
-const router = require("./routes/router");
+const appRouter = require("./routes/appRouter");
+const apiRouter = require("./routes/apiRouter");
 const loaders = require("./loaders");
 const logger = require('./utils/logger');
 const { port } = require('./config/main');
+const { dailyReset } = require('./utils/dailyReset');
 
 const app = express();
 
@@ -45,12 +47,15 @@ const startServer = async () => {
         }
     });
 
-    app.use("/", router);
+    app.use("/", appRouter);
+    app.use("/api", apiRouter);
 
     await loaders({ app });
     server.listen(port, () => {
-        logger("info", "Server", `Gold Site Server is started on ${port} port`);
+        logger("info", "Server", `Server is started on ${port} port`);
     });
+
+    dailyReset();
 }
 
 startServer();
