@@ -16,7 +16,7 @@ exports.createAccount = async (req, res) => {
             });
         }
         console.log("this is the req", req.body)
-        const { customerEmail, companyEmail, planName, tradeSystem } = req.body;
+        const { customerEmail, planName, tradeSystem } = req.body;
         const customer = await Customer.findOne({ where: { email: customerEmail } });
         if (!customer) {
             return res.status(404).json({
