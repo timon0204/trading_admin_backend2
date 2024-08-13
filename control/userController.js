@@ -80,3 +80,17 @@ exports.updatePassword = async (req, res) => {
         return res.status(500).json({message: "Update Password Failed"});
     }
 }
+
+exports.getUserInfo = async (req, res) => {
+    try {
+        const user = await Customer.findOne({ where: { id: req.userID } });
+        if (!user) {
+            return res.status(500).json({ message: "Invalid User" });
+        }
+        
+        return res.status(200).json({user});
+    } catch (error) {
+        logger("error", "UserController", `UpdatePassword | ${error.message}`)
+        return res.status(500).json({message: "Update Password Failed"});
+    }
+}

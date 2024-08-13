@@ -10,5 +10,6 @@ router.post("/auth", userController.login);
 router.get("/getAccounts", usermiddleware, userController.getAccounts)
 router.post("/getProfit", usermiddleware, userController.getProfit)
 router.post("/updatePassword", usermiddleware, userController.updatePassword)
+router.post("/getUserInfo", usermiddleware, userController.getUserInfo)
 
 module.exports = router;
