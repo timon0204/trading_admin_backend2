@@ -21,6 +21,10 @@ module.exports = (sequelize, Sequelize) => {
                 type: Sequelize.STRING,
                 allowNull: false
             },
+            token: {
+                type: Sequelize.STRING,
+                allowNull: true,
+            },
             active: {
                 type: Sequelize.BOOLEAN,
                 allowNull: false,
@@ -141,27 +145,27 @@ module.exports = (sequelize, Sequelize) => {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash("123456", saltRounds);
 
-        await Customer.create({
-            email: 'customer@gmail.com',
-            companyEmail: 'testCompany@gmail.com',
-            password: hashedPassword,
-            active: true,
-            firstName: "TestFistName",
-            lastName: "TestLastName",
-            nickName: "TestNickName",
-            birthday: "2000-01-01",
-            accounts: 0,
-            orders: 0,
-            language: "en",
-            phone: "+380 123456789",
-            status: "allow",
-            country: "Ukraine",
-            state: "KR",
-            city: "",
-            zip: 0,
-            status: 'allow',
-            addressLine1: "",
-        })
+        // await Customer.create({
+        //     email: 'customer@gmail.com',
+        //     companyEmail: 'admin@gmail.com',
+        //     password: hashedPassword,
+        //     active: true,
+        //     firstName: "TestFistName",
+        //     lastName: "TestLastName",
+        //     nickName: "TestNickName",
+        //     birthday: "2000-01-01",
+        //     accounts: 0,
+        //     orders: 0,
+        //     language: "en",
+        //     phone: "+380 123456789",
+        //     status: "allow",
+        //     country: "Ukraine",
+        //     state: "KR",
+        //     city: "",
+        //     zip: 0,
+        //     status: 'allow',
+        //     addressLine1: "",
+        // })
         
 
     };

@@ -19,7 +19,7 @@ exports.createAccount = async (req, res) => {
         const { customerEmail, planName, tradeSystem } = req.body;
         const customer = await Customer.findOne({ where: { email: customerEmail } });
         if (!customer) {
-            return res.status(404).json({
+            return res.status(500).json({
                 status: false,
                 message: "Customer not found."
             });
@@ -27,9 +27,15 @@ exports.createAccount = async (req, res) => {
 
         const plan = await Plan.findOne({ where: { name: planName } });
         if (!plan) {
-            return res.status(404).json({
+            return res.status(500).json({
                 status: false,
                 message: "Plan not found."
+            });
+        }
+        if(!(tradeSystem == "LaserTrade" || tradeSystem == "MT4")) {
+            return res.status(500).json({
+                status: false,
+                message: `TradeSystem not found`
             });
         }
         const displayName = tradeSystem == "LaserTrade" ? (new Date()).getTime() : req.body.displayName;
@@ -52,7 +58,9 @@ exports.createAccount = async (req, res) => {
             customerEmail,
             companyEmail: customer.companyEmail,
             plan: planName,
+            balance: plan.initialBalance,
             currentEquity: plan.initialBalance,
+            currentDrawdown: 0,
             leverage: plan.leverage,
             type: "Phase1",
             dailyDrawdown: (plan.initialBalance * plan.dailyDrawdown / 100),

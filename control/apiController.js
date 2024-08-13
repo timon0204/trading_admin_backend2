@@ -43,8 +43,8 @@ exports.getMT4Account = async (req, res) => {
         if (!mail || !accountNumber || !accountBalance || !accountEquity || !drawdown || !chartStartDate) {
             return res.status(400).send('Missing required fields');
         }
-        const customer = await Customer.find({where : {email : mail}});
-        const account = await Account.find({where : {displayName : accountNumber, customerEmail: mail}});
+        const customer = await Customer.findOne({where : {email : mail}});
+        const account = await Account.findOne({where : {displayName : accountNumber, customerEmail: mail}});
         if(account && customer) {
             await Account.update({
                 balance: accountBalance,
@@ -56,10 +56,10 @@ exports.getMT4Account = async (req, res) => {
         }
 
         ///////////////////////**************Start Check Account With Plan****************///////////////////////////////
-        if (balance < account.totalDrawdown) {
-            await Account.update({ breached: true, breachedReason: "TotalDrawdown" }, { where: { displayName } });
+        if (accountEquity < account.totalDrawdown) {
+            await Account.update({ breached: true, breachedReason: "TotalDrawdown" }, { where: { displayName: accountNumber } });
         }
-        if (balance > account.totalTarget) {
+        if (accountEquity > account.totalTarget) {
             await Account.update({ breached: true, breachedReason: "TotalGoal" }, { where: { displayName } });
         }
         if (account.dayStartEquity - balance > account.dailyDrawdown) {

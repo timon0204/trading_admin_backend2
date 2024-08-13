@@ -97,28 +97,6 @@ module.exports = (sequelize, Sequelize) => {
 
     Account.migrate = async () => {
         await Account.destroy({ truncate: true });
-
-        await Account.create({
-            displayName: 'KKK',
-            customerEmail: 'custormer@gmail.com',
-            companyEmail: 'testCompany@gmail.com',
-            plan: 'PPPP',
-            balance: "10000",
-            currentEquity: '112312',
-            currentDrawdown: 0,
-            leverage: '1231',
-            type: 'Phase1',
-            dailyDrawdown: 12312,
-            totalDrawdown:1231,
-            totalTarget:12312 ,
-            profitShare:12312,
-            allow: true,
-            blockReason: '13123123',
-            breached:false,
-            dayStartEquity:12312,
-            breachedReason: 'None',
-            tradeSystem: 'MT4'
-        })
     };
 
     return Account;

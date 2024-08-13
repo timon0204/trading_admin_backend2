@@ -64,14 +64,6 @@ module.exports = (sequelize, Sequelize) => {
                 role: "Admin",
                 allow: true,
             })
-            await Company.create({
-                email: "testCompany@gmail.com",
-                name: "Company",
-                password: hashedPassword,
-                token:  jwt.sign({hashedPassword, type:"Demo"}, secretKey),
-                role: "Company",
-                allow: true,
-            })
     };
 
     return Company;
