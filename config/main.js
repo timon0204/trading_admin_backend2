@@ -2,7 +2,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 module.exports = {
-    port: process.env.PORT || 8000,
+    port: process.env.PORT || 8001,
 
     database: {
         type: process.env.DB_TYPE || "mysql",

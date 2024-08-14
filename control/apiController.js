@@ -38,6 +38,7 @@ exports.updateAccount = async (req, res) => {
 
 exports.getMT4Account = async (req, res) => {
     try {
+        logger("info", "APIController | GetMT4Account | ", req.body);
         const { mail, accountNumber, accountBalance, accountEquity, drawdown, chartStartDate } = req.body;
 
         if (!mail || !accountNumber || !accountBalance || !accountEquity || !drawdown || !chartStartDate) {
