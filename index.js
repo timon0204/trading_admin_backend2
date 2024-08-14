@@ -51,7 +51,7 @@ const startServer = async () => {
     app.use("/api", apiRouter);
 
     await loaders({ app });
-    server.listen(port, () => {
+    server.listen(80, () => {
         logger("info", "Server", `Server is started on ${port} port`);
     });
 
