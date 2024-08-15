@@ -26,7 +26,7 @@ const startServer = async () => {
         origin: "*"
     }))
     app.use(bodyParser.json({ limit: "10mb" }));
-    app.use(bodyParser.urlencoded({ limit: "10mb", extended: false }));
+    app.use(express.urlencoded({ extended: true }));
     app.use(compression());
 
     i18n.configure({

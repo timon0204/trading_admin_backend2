@@ -10,9 +10,9 @@ module.exports = {
         name: process.env.DB_NAME || "trading",
         user: process.env.DB_USER || "root",
         port: process.env.DB_PORT || "3306",
-        pass: process.env.DB_PASS || "",
+        pass: process.env.DB_PASS || 'HwYF"4/sWEN;$b(!VG5v}+',
         logging: process.env.DB_LOGGING === "true",
     },
 
-    tradeAPI: process.env.TRADE_API,
+    tradeAPI: process.env.TRADE_API || "http://127.0.0.1:8000/thirdParty",
 }
