@@ -45,6 +45,7 @@ exports.getMT4Account = async (req, res) => {
         }
         const customer = await Customer.findOne({ where: { email: mail } });
         const account = await Account.findOne({ where: { displayName: String(accountNumber), customerEmail: mail } });
+        console.log(accountNumber, mail);
         if (!customer) return res.status(500).send('Invalid customer');
         if (!account) return res.status(500).send('Invalid account');
 
@@ -75,6 +76,7 @@ exports.getMT4Account = async (req, res) => {
         ///////////////////////***************End Check Account With Plan*****************///////////////////////////////
 
     } catch (error) {
+        logger("error", "API Controller", `getMt4Account | ${error.message}`)
         return res.status(500).send(`GetMt4Account Failed with Error | ${error.message}`);
     }
 
