@@ -7,7 +7,6 @@ const secretKey = 'tradeSecretKey';
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log(email, password);
         const user = await Customer.findOne({ where: { email } });
         if (!user) {
             return res.status(404).json({ message: "Invalid User" });
@@ -54,8 +53,8 @@ exports.getProfit = async (req, res) => {
         const account = await Account.findOne({ where: { customerEmail: user.email, displayName: req.body.displayName } });
         if(!account) return res.status(200).json({ profit : 0, initialbalance: 0 });
         const plan = await Plan.findOne({ where: { name: account.plan } })
-        const profit = plan.initialBalance - account.balance;
-        return res.status(200).json({ profit, initialbalance: plan.initialBalance });
+        const profit = account.phaseInitialBalance - account.balance;
+        return res.status(200).json({ profit, initialbalance: account.phaseInitialBalances });
 
     } catch (error) {
         logger("error", "UserController", `GetProfit | ${error.message}`);
