@@ -44,7 +44,7 @@ exports.getMT4Account = async (req, res) => {
             return res.status(400).send('Missing required fields');
         }
         const customer = await Customer.findOne({ where: { email: mail } });
-        const account = await Account.findOne({ where: { displayName: accountNumber, customerEmail: mail } });
+        const account = await Account.findOne({ where: { displayName: String(accountNumber), customerEmail: mail } });
         if (!customer) return res.status(500).send('Invalid customer');
         if (!account) return res.status(500).send('Invalid account');
 
