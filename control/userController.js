@@ -10,10 +10,10 @@ exports.login = async (req, res) => {
         console.log(email, password);
         const user = await Customer.findOne({ where: { email } });
         if (!user) {
-            return res.status(500).json({ message: "Invalid User" });
+            return res.status(404).json({ message: "Invalid User" });
         }
         const result = await bcrypt.compare(password, user.password);
-        if (!result) return res.status(500).json({ message: "Invalid Password" });
+        if (!result) return res.status(404).json({ message: "Invalid Password" });
 
         const payload = { id: user.id, password: user.password };
         const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });
@@ -31,7 +31,7 @@ exports.getAccounts = async (req, res) => {
 
         const user = await Customer.findOne({ where: { id: req.userID } });
         if (!user) {
-            return res.status(500).json({ message: "Invalid User" });
+            return res.status(404).json({ message: "Invalid User" });
         }
         const accounts = await Account.findAll({ where: { customerEmail: user.email } });
         return res.status(200).json({ accounts });
@@ -47,7 +47,7 @@ exports.getProfit = async (req, res) => {
 
         const user = await Customer.findOne({ where: { id: req.userID } });
         if (!user) {
-            return res.status(500).json({ message: "Invalid User" });
+            return res.status(404).json({ message: "Invalid User" });
         }
         if(!req.body.displayName) return res.status(200).json({ profit : 0, initialbalance:0 });
 
@@ -67,11 +67,11 @@ exports.updatePassword = async (req, res) => {
     try {
         const user = await Customer.findOne({ where: { id: req.userID } });
         if (!user) {
-            return res.status(500).json({ message: "Invalid User" });
+            return res.status(404).json({ message: "Invalid User" });
         }
         const {oldPassword, newPassword} = req.body;
         const result = await bcrypt.compare(oldPassword, user.password);
-        if(!result) return res.status(500).json({message: "Incorrect Old Password"});
+        if(!result) return res.status(404).json({message: "Incorrect Old Password"});
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         const  updateUser = await Customer.update({password : hashedPassword}, {where: {id : user.id}});
         return res.status(200).json({updateUser});
@@ -85,7 +85,7 @@ exports.getUserInfo = async (req, res) => {
     try {
         const user = await Customer.findOne({ where: { id: req.userID } });
         if (!user) {
-            return res.status(500).json({ message: "Invalid User" });
+            return res.status(404).json({ message: "Invalid User" });
         }
         
         return res.status(200).json({user});

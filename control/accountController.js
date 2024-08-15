@@ -15,11 +15,10 @@ exports.createAccount = async (req, res) => {
                 message: "Invalid authorization token."
             });
         }
-        console.log("this is the req", req.body)
         const { customerEmail, planName, tradeSystem } = req.body;
         const customer = await Customer.findOne({ where: { email: customerEmail } });
         if (!customer) {
-            return res.status(500).json({
+            return res.status(404).json({
                 status: false,
                 message: "Customer not found."
             });
@@ -27,18 +26,19 @@ exports.createAccount = async (req, res) => {
 
         const plan = await Plan.findOne({ where: { name: planName } });
         if (!plan) {
-            return res.status(500).json({
+            return res.status(404).json({
                 status: false,
                 message: "Plan not found."
             });
         }
-        if(!(tradeSystem == "LaserTrade" || tradeSystem == "MT4")) {
-            return res.status(500).json({
+        if (!(tradeSystem == "LaserTrade" || tradeSystem == "MT4")) {
+            return res.status(404).json({
                 status: false,
                 message: `TradeSystem not found`
             });
         }
         const displayName = tradeSystem == "LaserTrade" ? (new Date()).getTime() : req.body.displayName;
+        const phase1 = JSON.parse(plan.phases)[0];
         if (tradeSystem == "LaserTrade") {
 
             await axios.post(`${tradeAPI}/createUser`, {
@@ -58,19 +58,21 @@ exports.createAccount = async (req, res) => {
             customerEmail,
             companyEmail: customer.companyEmail,
             plan: planName,
-            balance: plan.initialBalance,
-            currentEquity: plan.initialBalance,
+            balance: phase1.initialBalance,
+            currentEquity: phase1.initialBalance,
             currentDrawdown: 0,
-            leverage: plan.leverage,
+            leverage: phase1.initialLeverage,
             type: "Phase1",
-            dailyDrawdown: (plan.initialBalance * plan.dailyDrawdown / 100),
-            totalDrawdown: (plan.initialBalance * (100 - plan.totalDrawdown) / 100),
-            totalTarget: (plan.initialBalance * (100 + plan.phase1) / 100),
-            profitShare: plan.profitShare,
+            dailyDrawdown: phase1.maxDailyLoss,
+            totalDrawdown: phase1.maxLoss,
+            totalTarget: phase1.profitTarget,
+            profitShare: phase1.profitSplitBroker,
+            drawDownType: phase1.maxDailyLossType,
             allow: true,
             breached: false,
             tradeSystem,
-            dayStartEquity: plan.initialBalance,
+            dayStartEquity: phase1.initialBalance,
+            phaseInitialBalance: phase1.initialBalance,
         });
 
         const accounts = company.role === "Admin"
@@ -127,17 +129,22 @@ exports.upgradeAccount = async (req, res) => {
         if (account.breachedReason == "TotalGoal") {
             const plan = await Plan.findOne({ where: { name: account.plan } });
             if (account.type == "Phase1") {
+                const phase2 = JSON.parse(plan.phases)[1];
+                if (!phase2) return res.status(500).json("You are already Pass all Phases of this plan");
                 await Account.update({
-                    currentEquity: plan.initialBalance,
-                    leverage: plan.leverage,
+                    balance: phase2.initialBalance,
+                    currentEquity: phase2.initialBalance,
+                    currentDrawdown: 0,
+                    leverage: phase2.initialLeverage,
                     type: "Phase2",
-                    dailyDrawdown: (plan.initialBalance * plan.dailyDrawdown / 100),
-                    totalDrawdown: (plan.initialBalance * (100 - plan.totalDrawdown) / 100),
-                    totalTarget: (plan.initialBalance * (100 + plan.phase2) / 100),
-                    profitShare: plan.profitShare,
+                    dailyDrawdown: phase2.maxDailyLoss,
+                    totalDrawdown: phase2.maxLoss,
+                    totalTarget: phase2.profitTarget,
+                    profitShare: phase2.profitSplitBroker,
                     allow: true,
                     breached: false,
-                    dayStartEquity: plan.initialBalance,
+                    dayStartEquity: phase2.initialBalance,
+                    phaseInitialBalance: phase2.initialBalance,
                 })
             }
         }

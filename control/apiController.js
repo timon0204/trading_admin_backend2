@@ -13,15 +13,15 @@ exports.updateAccount = async (req, res) => {
         await Account.update({ balance: balance }, { where: { displayName } });
 
         ///////////////////////**************Start Check Account With Plan****************///////////////////////////////
-        if (account.dayStartEquity - balance > account.dailyDrawdown) {
+        if ((account.dayStartEquity - balance) / account.phaseInitialBalance > account.dailyDrawdown) {
             await axios.post(`${tradeAPI}/blockUser`, { email: account.displayName });
             await Account.update({ breached: true, breachedReason: "DailyDrawdown" }, { where: { displayName } });
         }
-        if (balance < account.totalDrawdown) {
+        if ((account.phaseInitialBalance - accountEquity) / account.phaseInitialBalance > account.totalDrawdown) {
             await axios.post(`${tradeAPI}/blockUser`, { email: account.displayName });
-            await Account.update({ breached: true, breachedReason: "TotalDrawdown" }, { where: { displayName } });
+            await Account.update({ breached: true, breachedReason: "TotalDrawdown" }, { where: { displayName: accountNumber } });
         }
-        if (balance > account.totalTarget) {
+        if ((accountEquity - account.phaseInitialBalance) / account.phaseInitialBalance > account.totalTarget) {
             await axios.post(`${tradeAPI}/blockUser`, { email: account.displayName });
             await Account.update({ breached: true, breachedReason: "TotalGoal" }, { where: { displayName } });
         }
@@ -44,26 +44,34 @@ exports.getMT4Account = async (req, res) => {
         if (!mail || !accountNumber || !accountBalance || !accountEquity || !drawdown || !chartStartDate) {
             return res.status(400).send('Missing required fields');
         }
-        const customer = await Customer.findOne({where : {email : mail}});
-        const account = await Account.findOne({where : {displayName : accountNumber, customerEmail: mail}});
-        if(account && customer) {
-            await Account.update({
-                balance: accountBalance,
-                currentEquity: accountEquity,
-                currentDrawdown: drawdown
-            }, {where: {displayName: accountNumber}});
-        } else {
-            res.status(500).send('Invalid account');
+        const customer = await Customer.findOne({ where: { email: mail } });
+        const account = await Account.findOne({ where: { displayName: accountNumber, customerEmail: mail } });
+        if (!account || !customer) return res.status(500).send('Invalid account');
+
+        const plan = await Plan.findOne({ where: { name: planName } });
+
+        if (account.maxDailyLossType == "trailingDrawdown") {
+            if (accountBalance > account.balance) {
+                account.dayStartEquity = accountBalance;
+                await Account.update({ dayStartEquity: accountBalance }, { where: { displayName: accountNumber } });
+            }
         }
+        const currentDrawdown = (account.dayStartEquity - accountEquity) > 0 ? ((account.dayStartEquity - accountEquity) / account.phaseInitialBalance) : 0
+        await Account.update({
+            balance: accountBalance,
+            currentEquity: accountEquity,
+            currentDrawdown: currentDrawdown,
+        }, { where: { displayName: accountNumber } });
+
 
         ///////////////////////**************Start Check Account With Plan****************///////////////////////////////
-        if (account.dayStartEquity - balance > account.dailyDrawdown) {
+        if (currentDrawdown > account.dailyDrawdown) {
             await Account.update({ breached: true, breachedReason: "DailyDrawdown" }, { where: { displayName } });
         }
-        if (accountEquity < account.totalDrawdown) {
+        if ((account.phaseInitialBalance - accountEquity) / account.phaseInitialBalance > account.totalDrawdown) {
             await Account.update({ breached: true, breachedReason: "TotalDrawdown" }, { where: { displayName: accountNumber } });
         }
-        if (accountEquity > account.totalTarget) {
+        if ((accountEquity - account.phaseInitialBalance) / account.phaseInitialBalance > account.totalTarget) {
             await Account.update({ breached: true, breachedReason: "TotalGoal" }, { where: { displayName } });
         }
         ///////////////////////***************End Check Account With Plan*****************///////////////////////////////

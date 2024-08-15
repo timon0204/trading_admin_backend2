@@ -8,53 +8,66 @@ const logger = require('../utils/logger');
 
 exports.createPlan = async (req, res) => {
     try {
-        const { name, price, initialBalance, dailyDrawdown, totalDrawdown, phase1, phase2, leverage, profitShare } = req.body;
-        const createdAt = Date.now();
-        const plan = await Plan.create({ name: name, price: price, initialBalance: initialBalance, dailyDrawdown: dailyDrawdown, totalDrawdown: totalDrawdown, phase1: phase1, phase2: phase2, leverage: leverage, profitShare: profitShare, createdAt: createdAt });
-        plan.save();
-        return res.status(200).send({ message: 'created successfully' });
+        const { planName, planPrice, phases } = req.body;
+        const exitPlan = await Plan.findOne({ where: { name: planName } });
+        if (exitPlan) {
+            return res.status(409).json({ message: 'Duplicated plan name' });
+        }
+        if (!planName || !planPrice) return res.status(500).json({ message: "Invalid value planName && planPrice" });
+            console.log(phases[0]);
+            for (const phase of phases) {
+            console.log(phase);
+
+            const { phaseName, fundedPhase, initialBalance, initialLeverage, tradingPeriod, minTradingDays, maxDailyLoss, maxDailyLossType, maxLoss, profitTarget, profitSplitBroker } = phase;
+            if (!phaseName || !initialBalance || !initialLeverage || !maxDailyLoss || !maxDailyLossType || !maxLoss || !profitTarget || !profitSplitBroker) {
+                return res.status(500).json({ message: "Invalid value" });
+            }
+        }
+        const data_phases = JSON.stringify(phases);
+        const plan = await Plan.create({ name: planName, price: planPrice, phases: data_phases })
+        return res.status(200).send({ message: 'Created successfully' });
     } catch (error) {
         return res.status(500).send({ message: 'An error occured when create plan' });
     }
-
 }
 
 exports.getPlans = async (req, res) => {
     try {
-        const plans = await Plan.findAll();
+        const planAll = await Plan.findAll();
+        const plans = planAll.map((plan) => { return { planID: plan.id, planName: plan.name, planPrice: plan.price, phases: JSON.parse(plan.phases), createdAt: plan.createdAt, updatedAt: plan.updatedAt } });
         return res.status(200).json({ plans });
     } catch (error) {
-        logger("error", "AccountController", `Get Accounts | ${error.message}`)
-        res.status(500).json({ message: `Get Accounts Failed | ${error.message}` })
+        logger("error", "PlanController", `Get Plans | ${error.message}`)
+        res.status(500).json({ message: `Get Plans Failed | ${error.message}` })
     }
 }
 
 exports.updatePlan = async (req, res) => {
     try {
-        const { name, price, initialBalance, dailyDrawdown, totalDrawdown, phase1, phase2, leverage, profitShare, planId } = req.body;
-        const plan = await Plan.findOne({ where: { id: planId } });
+        const { planID, planName, planPrice, phases } = req.body;
+        const plan = await Plan.findOne({ where: { id: planID } });
         if (!plan) {
-            return res.send(500).send({message:'Cannot find plan'});
+            return res.send(404).send({ message: 'Cannot find plan' });
         }
-        const updatedAt = Date.now();
-        await Plan.update({name: name, price:price, initialBalance:initialBalance, dailyDrawdown:dailyDrawdown, totalDrawdown: totalDrawdown, phase1:phase1, phase2: phase2, leverage:leverage, profitShare: profitShare}, {where: {id: planId}});
-        return res.status(200).json({message: "update plan successfully"});
+        await Plan.update({ name: planName, price: planPrice, phases: JSON.stringify(phases) }, { where: { id: planID } });
+        return res.status(200).json({ message: "update plan successfully" });
     } catch (error) {
-        logger("error", "AccountController", `Upgrade Account | ${error.message}`);
-        return res.status(200).send({message: 'An error occured when update plan'});
+        logger("error", "PlanController", `Upgrade Plan | ${error.message}`);
+        return res.status(200).send({ message: 'An error occured when update plan' });
     }
 }
 
 exports.deletePlan = async (req, res) => {
-    const { planId } = req.body;
+    const { planID } = req.body;
     try {
-        const plan = await Plan.findOne({ where: { id: planId } });
+        const plan = await Plan.findOne({ where: { id: planID } });
         if (!plan) {
-            return res.status(404).send({ message: 'Cannot find the Account' });
+            return res.status(404).send({ message: 'Cannot find the Plan' });
         }
-        await Plan.destroy({ where: { id: planId } });
+        await Plan.destroy({ where: { id: planID } });
         return res.status(200).send({ message: "Successfully deleted" });
     } catch (error) {
-        return res.status(500).send({ message: 'An error occurred while deleting the customer.' });
+        logger("error", "PlanController", `Delete Plan | ${error.message}`);
+        return res.status(500).send({ message: 'An error occurred while deleting the Plan.' });
     }
 }

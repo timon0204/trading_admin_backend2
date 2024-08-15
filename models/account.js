@@ -86,6 +86,10 @@ module.exports = (sequelize, Sequelize) => {
             dayStartEquity: {
                 type: Sequelize.DOUBLE(20, 2),
                 allowNull: false,
+            },
+            phaseInitialBalance: {
+                type: Sequelize.DOUBLE(20, 2),
+                allowNull: false
             }
         },
         {

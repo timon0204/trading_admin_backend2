@@ -6,7 +6,6 @@ const secretKey = 'tradeSecretKey';
 
 exports.login = async (req, res) => {
     const { email, password } = req.body;
-    console.log("this is the req.body",req.body)
     try {
         const company = await Company.findOne({ where: { email: email } });
         if (company) {
@@ -17,10 +16,10 @@ exports.login = async (req, res) => {
                 await Company.update({ token: token }, { where: { id: company.id } });
                 return res.status(200).json({ state: true, token: token });
             } else {
-                return res.status(401).json({ state: false, message: "Invalid Company" });
+                return res.status(404).json({ state: false, message: "Invalid Company" });
             }
         } else {
-            return res.status(401).json({ state: false, message: "Invalid Company" });
+            return res.status(404).json({ state: false, message: "Invalid Company" });
         }
     } catch (error) {
         return res.status(500).json({ state: false, message: "An error occurred during authentication." });

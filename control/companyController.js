@@ -14,7 +14,7 @@ exports.createCompany = async (req, res) => {
         const { name, email, password, role } = req.body;
 
         const exitCompany = await Company.findOne({ where: { email } })
-        if (exitCompany) return res.status(500).json({ message: "Duplicated User" });
+        if (exitCompany) return res.status(409).json({ message: "Duplicated User" });
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         await axios.post(`${tradeAPI}/createCompany`, { email, password, role });
