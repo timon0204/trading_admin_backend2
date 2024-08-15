@@ -54,7 +54,7 @@ exports.getMT4Account = async (req, res) => {
                 await Account.update({ dayStartEquity: accountBalance }, { where: { displayName: accountNumber } });
             }
         }
-        const currentDrawdown = (account.dayStartEquity - accountEquity) > 0 ? ((account.dayStartEquity - accountEquity) / account.phaseInitialBalance) : 0
+        const currentDrawdown = (account.dayStartEquity - accountEquity) > 0 ? ((account.dayStartEquity - accountEquity) / account.phaseInitialBalance * 100) : 0
         await Account.update({
             balance: accountBalance,
             currentEquity: accountEquity,
@@ -66,10 +66,10 @@ exports.getMT4Account = async (req, res) => {
         if (currentDrawdown > account.dailyDrawdown) {
             await Account.update({ breached: true, breachedReason: "DailyDrawdown" }, { where: { displayName } });
         }
-        if ((account.phaseInitialBalance - accountEquity) / account.phaseInitialBalance > account.totalDrawdown) {
+        if ((account.phaseInitialBalance - accountEquity) / account.phaseInitialBalance * 100 > account.totalDrawdown) {
             await Account.update({ breached: true, breachedReason: "TotalDrawdown" }, { where: { displayName: accountNumber } });
         }
-        if ((accountEquity - account.phaseInitialBalance) / account.phaseInitialBalance > account.totalTarget) {
+        if ((accountEquity - account.phaseInitialBalance) / account.phaseInitialBalance * 100 > account.totalTarget) {
             await Account.update({ breached: true, breachedReason: "TotalGoal" }, { where: { displayName } });
         }
         ///////////////////////***************End Check Account With Plan*****************///////////////////////////////

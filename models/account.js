@@ -100,7 +100,7 @@ module.exports = (sequelize, Sequelize) => {
     );
 
     Account.migrate = async () => {
-        await Account.destroy({ truncate: true });
+        // await Account.destroy({ truncate: true });
     };
 
     return Account;
