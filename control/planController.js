@@ -14,10 +14,7 @@ exports.createPlan = async (req, res) => {
             return res.status(409).json({ message: 'Duplicated plan name' });
         }
         if (!planName || !planPrice) return res.status(500).json({ message: "Invalid value planName && planPrice" });
-            console.log(phases[0]);
             for (const phase of phases) {
-            console.log(phase);
-
             const { phaseName, fundedPhase, initialBalance, initialLeverage, tradingPeriod, minTradingDays, maxDailyLoss, maxDailyLossType, maxLoss, profitTarget, profitSplitBroker } = phase;
             if (!phaseName || !initialBalance || !initialLeverage || !maxDailyLoss || !maxDailyLossType || !maxLoss || !profitTarget || !profitSplitBroker) {
                 return res.status(500).json({ message: "Invalid value" });

@@ -2,7 +2,8 @@ const { Customer, Company } = require("../models");
 const { where } = require("sequelize");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { secretKey } = require("../config/key")
+const { secretKey } = require("../config/key");
+const logger = require("../utils/logger");
 
 exports.createCustomer = async (req, res) => {
     try {
@@ -22,9 +23,9 @@ exports.createCustomer = async (req, res) => {
         const createdAt = Date.now();
         const customer = await Customer.create({ email: email, companyEmail: companyEmail, password: hashedPassword, active: active, firstName: firstName, middleName: middleName, lastName: lastName, nickName: nickName, birthday: birthday, accounts: 0, orders: 0, referrals: 0, language: language, phone: phone, exteranlID1: exteranlID1, exteranlID2: exteranlID2, agreementID: agreementID, agreementIP: agreementIP, agreementLegalName: agreementLegalName, agreementTs: agreementTs, country: country, state: state, city: city, zip: zip, addressLine1: addressLine1, status: status, addressLine2: addressLine2, addressLine3: addressLine3, createdAt: createdAt });
         return res.status(200).send({ message: "created successfully", });
-    } catch (err) {
-        console.log("this is a err", err.message);
-        return res.status(500).send({ message: `An error occurred while creating user | ${err.message}` });
+    } catch (error) {
+        logger("error", "CustomerController", `CreateCustomer | ${error.message}`)
+        return res.status(500).send({ message: `An error occurred while creating user | ${error.message}` });
     }
 }
 exports.getCustomers = async (req, res) => {
