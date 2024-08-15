@@ -38,7 +38,6 @@ exports.updateAccount = async (req, res) => {
 
 exports.getMT4Account = async (req, res) => {
     try {
-        logger("info", "APIController | GetMT4Account | ", req.body);
         const { mail, accountNumber, accountBalance, accountEquity, drawdown, chartStartDate } = req.body;
 
         if (!mail || !accountNumber || !accountBalance || !accountEquity || !drawdown || !chartStartDate) {
@@ -46,11 +45,8 @@ exports.getMT4Account = async (req, res) => {
         }
         const customer = await Customer.findOne({ where: { email: mail } });
         const account = await Account.findOne({ where: { displayName: accountNumber, customerEmail: mail } });
-        console.log(`displayName: ${accountNumber}, customerEmail: ${mail}`)
         if (!customer) return res.status(500).send('Invalid customer');
         if (!account) return res.status(500).send('Invalid account');
-
-        const plan = await Plan.findOne({ where: { name: planName } });
 
         if (account.maxDailyLossType == "trailingDrawdown") {
             if (accountBalance > account.balance) {
