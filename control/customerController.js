@@ -21,7 +21,6 @@ exports.createCustomer = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         const createdAt = Date.now();
         const customer = await Customer.create({ email: email, companyEmail: companyEmail, password: hashedPassword, active: active, firstName: firstName, middleName: middleName, lastName: lastName, nickName: nickName, birthday: birthday, accounts: 0, orders: 0, referrals: referrals, language: language, phone: phone, exteranlID1: exteranlID1, exteranlID2: exteranlID2, agreementID: agreementID, agreementIP: agreementIP, agreementLegalName: agreementLegalName, agreementTs: agreementTs, country: country, state: state, city: city, zip: zip, addressLine1: addressLine1, status: status, addressLine2: addressLine2, addressLine3: addressLine3, createdAt: createdAt });
-        customer.save();
         return res.status(200).send({ message: "created successfully", });
     } catch (err) {
         console.log("this is a err", err);
