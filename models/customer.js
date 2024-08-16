@@ -141,7 +141,7 @@ module.exports = (sequelize, Sequelize) => {
     );
 
     Customer.migrate = async () => {
-        // await Customer.destroy({ truncate: true });
+        await Customer.destroy({ truncate: true });
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash("123456", saltRounds);
 

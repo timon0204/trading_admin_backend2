@@ -31,7 +31,7 @@ module.exports = (sequelize, Sequelize) => {
     );
 
     Plan.migrate = async () => {
-        // await Plan.destroy({ truncate: true });
+        await Plan.destroy({ truncate: true });
     };
 
     return Plan;
