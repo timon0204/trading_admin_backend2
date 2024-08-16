@@ -7,7 +7,7 @@ const logger = require("../utils/logger");
 
 exports.createCustomer = async (req, res) => {
     try {
-        const { email, active, firstName, middleName, lastName, nickName, birthday, language, phone, exteranlID1, exteranlID2, agreementID, agreementIP, agreementLegalName, agreementTs, country, state, city, zip, addressLine1, addressLine2, addressLine3, status } = req.body;
+        const { email, active, firstName, middleName, lastName, nickName, birthday, language, phone, agreementID, agreementIP, agreementLegalName, agreementTs, country, state, city, zip, addressLine1, addressLine2, addressLine3, status } = req.body;
         const token = req.headers.authorization;
         const decodedToken = jwt.verify(token, secretKey);
         const originCompany = await Company.findOne({ where: { id: decodedToken.id } });
@@ -21,7 +21,7 @@ exports.createCustomer = async (req, res) => {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         const createdAt = Date.now();
-        const customer = await Customer.create({ email: email, companyEmail: companyEmail, password: hashedPassword, active: active, firstName: firstName, middleName: middleName, lastName: lastName, nickName: nickName, birthday: birthday, accounts: 0, orders: 0, referrals: 0, language: language, phone: phone, exteranlID1: exteranlID1, exteranlID2: exteranlID2, agreementID: agreementID, agreementIP: agreementIP, agreementLegalName: agreementLegalName, agreementTs: agreementTs, country: country, state: state, city: city, zip: zip, addressLine1: addressLine1, status: status, addressLine2: addressLine2, addressLine3: addressLine3, createdAt: createdAt });
+        const customer = await Customer.create({ email: email, companyEmail: companyEmail, password: hashedPassword, active: active, firstName: firstName, middleName: middleName, lastName: lastName, nickName: nickName, birthday: birthday, accounts: 0, orders: 0, referrals: 0, language: language, phone: phone, exteranlID1: 0, exteranlID2: 0, agreementID: agreementID, agreementIP: agreementIP, agreementLegalName: agreementLegalName, agreementTs: agreementTs, country: country, state: state, city: city, zip: zip, addressLine1: addressLine1, status: status, addressLine2: addressLine2, addressLine3: addressLine3, createdAt: createdAt });
         return res.status(200).send({ message: "created successfully", });
     } catch (error) {
         logger("error", "CustomerController", `CreateCustomer | ${error.message}`)
@@ -47,11 +47,11 @@ exports.getCustomers = async (req, res) => {
 
 exports.updateCustomer = async (req, res) => {
     try {
-        const { email, password, active, firstName, middleName, lastName, nickName, birthday, accounts, orders, referrals, language, phone, exteranlID1, exteranlID2, agreementID, agreementIP, agreementLegalName, agreementTs, country, state, city, zip, addressLine1, addressLine2, addressLine3, customerId } = req.body;
+        const { email, password, active, firstName, middleName, lastName, nickName, birthday, accounts, orders, referrals, language, phone, agreementID, agreementIP, agreementLegalName, agreementTs, country, state, city, zip, addressLine1, addressLine2, addressLine3, customerId } = req.body;
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         const updatedAt = Date.now();
-        await Customer.update({ email: email, password: hashedPassword, active: active, firstName: firstName, middleName: middleName, lastName: lastName, nickName: nickName, birthday: birthday, accounts: accounts, orders: orders, referrals: referrals, language: language, phone: phone, exteranlID1: exteranlID1, exteranlID2: exteranlID2, agreementID: agreementID, agreementIP: agreementIP, agreementLegalName: agreementLegalName, agreementTs: agreementTs, country: country, state: state, city: city, zip: zip, addressLine1: addressLine1, addressLine2: addressLine2, addressLine3: addressLine3, updatedAt: updatedAt }, { where: { id: customerId } })
+        await Customer.update({ email: email, password: hashedPassword, active: active, firstName: firstName, middleName: middleName, lastName: lastName, nickName: nickName, birthday: birthday, accounts: accounts, orders: orders, referrals: referrals, language: language, phone: phone, agreementID: agreementID, agreementIP: agreementIP, agreementLegalName: agreementLegalName, agreementTs: agreementTs, country: country, state: state, city: city, zip: zip, addressLine1: addressLine1, addressLine2: addressLine2, addressLine3: addressLine3, updatedAt: updatedAt }, { where: { id: customerId } })
 
         res.status(200).json({ messages: "Update Successfully" });
     } catch (error) {
