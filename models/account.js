@@ -90,6 +90,14 @@ module.exports = (sequelize, Sequelize) => {
             phaseInitialBalance: {
                 type: Sequelize.DOUBLE(20, 2),
                 allowNull: false
+            },
+            accountUser: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            accountPassword: {
+                type: Sequelize.STRING,
+                allowNull: false
             }
         },
         {

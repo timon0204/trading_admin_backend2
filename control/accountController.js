@@ -38,6 +38,8 @@ exports.createAccount = async (req, res) => {
             });
         }
         const displayName = tradeSystem == "LaserTrade" ? (new Date()).getTime() : req.body.displayName;
+        const accountUser = tradeSystem == "LaserTrade" ? customer.nickName : req.body.accountUser;
+        const accountPassword = tradeSystem == "LaserTrade" ? customer.password : req.body.accountPassword;
         const phase1 = JSON.parse(plan.phases)[0];
         if (tradeSystem == "LaserTrade") {
 
@@ -73,6 +75,8 @@ exports.createAccount = async (req, res) => {
             tradeSystem,
             dayStartEquity: phase1.initialBalance,
             phaseInitialBalance: phase1.initialBalance,
+            accountUser,
+            accountPassword,
         });
 
         const accounts = company.role === "Admin"
